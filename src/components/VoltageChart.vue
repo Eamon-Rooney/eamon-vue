@@ -15,27 +15,27 @@ export default {
     voltageReadings: {
       type: Array,
       required: true
-    },
-    timestamps: {
-      type: Array,
-      required: true
     }
   },
   computed: {
     plotlyData() {
-      return [{
-        x: this.timestamps,
-        y: this.voltageReadings,
+      return this.voltageReadings.map(reading => ({
+        x: reading.lastTenVoltgageReadings.map(r => r.timestamp),
+        y: reading.lastTenVoltgageReadings.map(r => r.voltage),
         type: 'scatter',
         mode: 'lines+markers',
-        marker: { color: 'red' }
-      }]
+        name: `${reading.name} (${reading.assetId})`
+      }))
     },
     plotlyLayout() {
       return {
-        title: 'Last 10 Voltage Readings',
-        xaxis: { title: 'Timestamp' },
-        yaxis: { title: 'Voltage' }
+        title: 'Voltage Readings',
+        xaxis: {
+          title: 'Timestamp'
+        },
+        yaxis: {
+          title: 'Voltage'
+        }
       }
     }
   }

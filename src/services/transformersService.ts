@@ -1,4 +1,4 @@
-const transformersURL = 'https://mp1bd39e1e8b61c35a5e.free.beeceptor.com/transformersList'
+const transformersURL = import.meta.env.VITE_TRANSFORMERS_URL
 
 export const fetchData = async () => {
   try {
