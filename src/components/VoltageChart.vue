@@ -35,6 +35,11 @@ export default {
         },
         yaxis: {
           title: 'Voltage'
+        },
+        showlegend: true, // Ensure legend is shown
+        legend: {
+          itemclick: false, // Disable legend item click
+          itemdoubleclick: false // Disable legend item double click
         }
       }
     }
