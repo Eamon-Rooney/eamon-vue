@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, watchEffect } from 'vue'
 import { useAssetsStore } from '../stores/asset'
 import { useFilteredAssetsStore } from '../stores/filteredAssets'
 import VoltageChart from './VoltageChart.vue'
@@ -12,7 +12,6 @@ const selectedHealth = ref('')
 
 onMounted(() => {
   assetsStore.loadAssets()
-  filteredAssetsStore.setAssets(assetsStore.assets)
 })
 
 const resetStores = () => {
@@ -34,6 +33,11 @@ const filterAssets = () => {
 }
 
 watch([searchQuery, selectedRegion, selectedHealth], filterAssets)
+
+watchEffect(() => {
+  filteredAssetsStore.setAssets(assetsStore.assets)
+  filterAssets()
+})
 
 const regions = computed(() => [...new Set(assetsStore.assets.map(asset => asset.region))])
 const healthStatuses = computed(() => [...new Set(assetsStore.assets.map(asset => asset.health))])
