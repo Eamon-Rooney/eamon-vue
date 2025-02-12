@@ -4,7 +4,7 @@
     <div class="custom-legend">
       <div v-for="(trace, index) in plotlyData" :key="index">
         <input type="checkbox" :id="'trace-' + index" :checked="trace.visible !== 'legendonly'" @change="toggleTrace(index)">
-        <label :for="'trace-' + index">{{ trace.name }}</label>
+        <label :for="'trace-' + index" :style="{ backgroundColor: trace.marker.color }">{{ trace.name }}</label>
       </div>
     </div>
   </div>
@@ -28,7 +28,9 @@ const plotlyData = computed(() => {
       y: asset.lastTenVoltageReadings.map(reading => reading.voltage),
       type: 'scatter',
       mode: 'lines+markers',
-      name: asset.name
+      name: asset.name,
+      marker: { color: getRandomColor() }, // Assign a random color to each trace
+      visible: true // Ensure traces are visible by default
     }))
 })
 
@@ -54,6 +56,16 @@ const toggleTrace = (index: number) => {
     Plotly.restyle(plotlyChart.value.$el, update, [index])
   }
 }
+
+// Function to generate a random color
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF'
+  let color = '#'
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)]
+  }
+  return color
+}
 </script>
 
 <style scoped>
@@ -66,5 +78,10 @@ const toggleTrace = (index: number) => {
 }
 .custom-legend input {
   margin-right: 5px;
+}
+.custom-legend label {
+  padding: 2px 5px;
+  border-radius: 3px;
+  color: white;
 }
 </style>
