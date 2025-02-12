@@ -1,5 +1,5 @@
 <template>
-  <div class="chart-container">
+  <div v-if="plotlyData.length > 0" class="chart-container">
     <div class="plotly-chart">
       <VuePlotly :data="plotlyData" :layout="plotlyLayout" ref="plotlyChart" />
     </div>
@@ -9,6 +9,9 @@
         <label :for="'trace-' + index" :style="{ backgroundColor: trace.marker.color }">{{ trace.name }}</label>
       </div>
     </div>
+  </div>
+  <div v-else class="no-data-message">
+    <p>No data found for this query. Try again</p>
   </div>
 </template>
   
@@ -121,6 +124,12 @@ watch(filteredAssetsStore.assets, () => {
   color: white;
   display: inline-block;
   width: 100%;
+}
+
+.no-data-message {
+  text-align: center;
+  color: red;
+  font-weight: bold;
 }
 
 @media (min-width: 1024px) {
