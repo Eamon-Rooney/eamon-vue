@@ -16,14 +16,14 @@
 import { ref, computed } from 'vue'
 import Plotly from 'plotly.js-dist'
 import { VuePlotly } from 'vue3-plotly'
-import { useAssetsStore } from '../stores/asset' 
+import { useFilteredAssetsStore } from '../stores/filteredAssets' 
 
-const assetsStore = useAssetsStore()
+const filteredAssetsStore = useFilteredAssetsStore()
 const plotlyChart = ref<InstanceType<typeof VuePlotly> | null>(null)
 
 const plotlyData = computed(() => {
-  console.log('Voltage Readings in VoltageChart:', assetsStore.assets) // Debugging line
-  return assetsStore.assets
+  console.log('Voltage Readings in VoltageChart:', filteredAssetsStore.assets) // Debugging line
+  return filteredAssetsStore.assets
     .filter(asset => asset !== undefined)
     .map(asset => ({
       x: asset.lastTenVoltageReadings.map(reading => reading.timestamp),
