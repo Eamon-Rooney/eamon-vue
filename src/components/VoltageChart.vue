@@ -77,6 +77,10 @@ const getRandomColor = () => {
   align-items: center;
 }
 
+.plotly-chart {
+  width: 100%; /* Ensure the chart takes full width */
+}
+
 .custom-legend {
   margin-top: 10px;
   display: flex;
