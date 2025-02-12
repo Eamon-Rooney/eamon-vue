@@ -1,16 +1,23 @@
 <template>
   <div>
-    <VuePlotly :data="plotlyData" :layout="plotlyLayout" />
+    <VuePlotly :data="plotlyData" :layout="plotlyLayout" ref="plotlyChart" />
+    <div class="custom-legend">
+      <div v-for="(trace, index) in plotlyData" :key="index">
+        <input type="checkbox" :id="'trace-' + index" :checked="trace.visible !== 'legendonly'" @change="toggleTrace(index)">
+        <label :for="'trace-' + index">{{ trace.name }}</label>
+      </div>
+    </div>
   </div>
 </template>
   
 <script setup lang="ts">
+import { ref, computed } from 'vue'
+import Plotly from 'plotly.js-dist'
 import { VuePlotly } from 'vue3-plotly'
-import type { VoltageReading } from '@/types/asset'
-import { computed, defineProps } from 'vue'
 import { useAssetsStore } from '../stores/asset' 
 
 const assetsStore = useAssetsStore()
+const plotlyChart = ref<InstanceType<typeof VuePlotly> | null>(null)
 
 const plotlyData = computed(() => {
   console.log('Voltage Readings in VoltageChart:', assetsStore.assets) // Debugging line
@@ -34,15 +41,30 @@ const plotlyLayout = computed(() => {
     yaxis: {
       title: 'Voltage'
     },
-    showlegend: true, // Ensure legend is shown
-    // legend: {
-    //   itemclick: false, // Disable legend item click
-    //   itemdoubleclick: false // Disable legend item double click
-    // }
+    showlegend: false // Hide default legend
   }
 })
+
+const toggleTrace = (index: number) => {
+  if (plotlyChart.value) {
+    const currentVisibility = plotlyChart.value.data[index].visible
+    const update = {
+      visible: currentVisibility === true || currentVisibility === undefined ? 'legendonly' : true
+    }
+    Plotly.restyle(plotlyChart.value.$el, update, [index])
+  }
+}
 </script>
 
 <style scoped>
-/* Add any necessary styles */
+.custom-legend {
+  margin-top: 10px;
+}
+.custom-legend div {
+  display: flex;
+  align-items: center;
+}
+.custom-legend input {
+  margin-right: 5px;
+}
 </style>
