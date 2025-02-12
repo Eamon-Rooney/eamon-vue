@@ -1,6 +1,8 @@
 <template>
-  <div>
-    <VuePlotly :data="plotlyData" :layout="plotlyLayout" ref="plotlyChart" />
+  <div class="chart-container">
+    <div class="plotly-chart">
+      <VuePlotly :data="plotlyData" :layout="plotlyLayout" ref="plotlyChart" />
+    </div>
     <div class="custom-legend">
       <div v-for="(trace, index) in plotlyData" :key="index">
         <input type="checkbox" :id="'trace-' + index" :checked="trace.visible !== 'legendonly'" @change="toggleTrace(index)">
@@ -69,19 +71,51 @@ const getRandomColor = () => {
 </script>
 
 <style scoped>
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .custom-legend {
   margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
 .custom-legend div {
   display: flex;
   align-items: center;
+  width: 100%;
 }
+
 .custom-legend input {
   margin-right: 5px;
 }
+
 .custom-legend label {
   padding: 2px 5px;
   border-radius: 3px;
   color: white;
+  display: inline-block;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .chart-container {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .chart-container > .plotly-chart {
+    flex: 4;
+  }
+
+  .chart-container > .custom-legend {
+    flex: 1;
+    margin-top: 0;
+    margin-left: 20px;
+  }
 }
 </style>
