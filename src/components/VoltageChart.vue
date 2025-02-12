@@ -5,7 +5,7 @@
     </div>
     <div class="custom-legend">
       <div v-for="(trace, index) in plotlyData" :key="index">
-        <input type="checkbox" :id="'trace-' + index" :checked="trace.visible !== 'legendonly'" @change="toggleTrace(index)">
+        <input type="checkbox" :id="'trace-' + index" :checked="traceVisibility[index]" @change="toggleTrace(index)">
         <label :for="'trace-' + index" :style="{ backgroundColor: trace.marker.color }">{{ trace.name }}</label>
       </div>
     </div>
@@ -13,17 +13,18 @@
 </template>
   
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import Plotly from 'plotly.js-dist'
 import { VuePlotly } from 'vue3-plotly'
 import { useFilteredAssetsStore } from '../stores/filteredAssets' 
 
 const filteredAssetsStore = useFilteredAssetsStore()
 const plotlyChart = ref<InstanceType<typeof VuePlotly> | null>(null)
+const traceVisibility = ref<boolean[]>([])
 
 const plotlyData = computed(() => {
   console.log('Voltage Readings in VoltageChart:', filteredAssetsStore.assets) // Debugging line
-  return filteredAssetsStore.assets
+  const data = filteredAssetsStore.assets
     .filter(asset => asset !== undefined)
     .map(asset => ({
       x: asset.lastTenVoltageReadings.map(reading => reading.timestamp),
@@ -34,6 +35,10 @@ const plotlyData = computed(() => {
       marker: { color: getRandomColor() }, // Assign a random color to each trace
       visible: true // Ensure traces are visible by default
     }))
+  
+  // Initialize traceVisibility array
+  traceVisibility.value = data.map(() => true)
+  return data
 })
 
 const plotlyLayout = computed(() => {
@@ -56,6 +61,7 @@ const toggleTrace = (index: number) => {
       visible: currentVisibility === true || currentVisibility === undefined ? 'legendonly' : true
     }
     Plotly.restyle(plotlyChart.value.$el, update, [index])
+    traceVisibility.value[index] = !traceVisibility.value[index]
   }
 }
 
@@ -68,6 +74,17 @@ const getRandomColor = () => {
   }
   return color
 }
+
+// Watch for changes in filteredAssetsStore.assets to reset checkboxes
+watch(filteredAssetsStore.assets, () => {
+  if (plotlyChart.value) {
+    plotlyChart.value.data.forEach((trace, index) => {
+      trace.visible = true // Reset visibility to true
+      traceVisibility.value[index] = true
+    })
+    Plotly.redraw(plotlyChart.value.$el)
+  }
+})
 </script>
 
 <style scoped>
