@@ -1,6 +1,6 @@
 # eamon-vue
 
-This template should help get you started developing with Vue 3 in Vite.
+Updated API sampledata.json to use "lastTenVoltageReadings" instead of "lastTenVoltgageReadings" (i.e. request for API to update Backend for proper spelling)
 
 ## Recommended IDE Setup
 
