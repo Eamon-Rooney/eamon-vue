@@ -1,18 +1,23 @@
-# eamon-vue
+# eamon-vue docker build
+```sh
+docker-compose up --build
+```
 
-Updated API sampledata.json to use "lastTenVoltageReadings" instead of "lastTenVoltgageReadings" (i.e. request for API to update Backend for proper spelling)
+# eamon-vue docker stop
+```sh
+docker-compose down
+```
 
-## Recommended IDE Setup
+# eamon-vue json fix
+Updated API sampledata.json to use "lastTenVoltageReadings" instead of "lastTenVoltgageReadings" 
+i.e. request for API to update Backend for correct spelling
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-## Type Support for `.vue` Imports in TS
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+------------------------------------------------------
 
-## Customize configuration
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+# Below OOTB scripts for local install, testing and linting
 
 ## Project Setup
 

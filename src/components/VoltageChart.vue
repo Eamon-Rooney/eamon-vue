@@ -21,28 +21,29 @@ import Plotly from 'plotly.js-dist'
 import { VuePlotly } from 'vue3-plotly'
 import { useFilteredAssetsStore } from '../stores/filteredAssets'
 import { useSearchFilterStore } from '../stores/searchFilterStore'
+import type { Trace } from '@/types/asset'
 
 const filteredAssetsStore = useFilteredAssetsStore()
 const searchFilterStore = useSearchFilterStore()
 const plotlyChart = ref<InstanceType<typeof VuePlotly> | null>(null)
 
-const plotlyData = computed(() => {
+const plotlyData = computed<Trace[]>(() => {
   console.log('Voltage Readings in VoltageChart:', filteredAssetsStore.assets) // Debugging line
   const data = filteredAssetsStore.assets
     .filter(asset => asset !== undefined)
     .map((asset) => ({
       assetId: asset.assetId,
       x: asset.lastTenVoltageReadings.map(reading => reading.timestamp),
-      y: asset.lastTenVoltageReadings.map(reading => reading.voltage),
+      y: asset.lastTenVoltageReadings.map(reading => Number(reading.voltage)),
       type: 'scatter',
       mode: 'lines+markers',
       name: asset.name,
       marker: { color: searchFilterStore.traceColors[asset.assetId] || getRandomColor() }, // Assign a random color to each trace
       visible: searchFilterStore.traceVisibility[asset.assetId] !== undefined ? searchFilterStore.traceVisibility[asset.assetId] : true // Ensure traces are visible by default
     }))
-  
+
   // Initialize traceVisibility and traceColors arrays if they are not already set
-  data.forEach(trace => {
+  data.forEach((trace: Trace) => {
     if (searchFilterStore.traceVisibility[trace.assetId] === undefined) {
       searchFilterStore.traceVisibility[trace.assetId] = true
     }
@@ -58,7 +59,7 @@ const plotlyLayout = computed(() => {
   return {
     title: 'Voltage Readings',
     xaxis: {
-      title: 'Timestamp'
+      title: 'Time'
     },
     yaxis: {
       title: 'Voltage'
@@ -69,14 +70,11 @@ const plotlyLayout = computed(() => {
 
 const toggleTrace = (assetId: number) => {
   if (plotlyChart.value) {
-    const traceIndex = plotlyChart.value.data.findIndex(trace => trace.assetId === assetId)
+    const traceIndex = plotlyChart.value.data.findIndex((trace: Trace) => trace.assetId === assetId)
     if (traceIndex !== -1) {
-      const currentVisibility = plotlyChart.value.data[traceIndex].visible
-      const update = {
-        visible: currentVisibility === true || currentVisibility === undefined ? 'legendonly' : true
-      }
-      Plotly.restyle(plotlyChart.value.$el, update, [traceIndex])
-      searchFilterStore.traceVisibility[assetId] = !searchFilterStore.traceVisibility[assetId]
+      plotlyChart.value.data[traceIndex].visible = !plotlyChart.value.data[traceIndex].visible
+      searchFilterStore.traceVisibility[assetId] = plotlyChart.value.data[traceIndex].visible
+      Plotly.redraw(plotlyChart.value)
     }
   }
 }
@@ -93,20 +91,12 @@ const getRandomColor = () => {
 
 // Watch for changes in filteredAssetsStore.assets to reset checkboxes
 watch(filteredAssetsStore.assets, (newAssets, oldAssets) => {
-  if (plotlyChart.value && newAssets !== oldAssets) {
-    plotlyChart.value.data.forEach((trace) => {
-      trace.visible = true // Reset visibility to true
-      searchFilterStore.traceVisibility[trace.assetId] = true
-    })
-    Plotly.redraw(plotlyChart.value.$el)
-  }
+  searchFilterStore.traceVisibility = newAssets.map(() => true)
 })
 
 // Watch for changes in searchFilterStore to update the chart
 watch([() => searchFilterStore.searchQuery, () => searchFilterStore.selectedRegion, () => searchFilterStore.selectedHealth], () => {
-  if (plotlyChart.value) {
-    Plotly.redraw(plotlyChart.value.$el)
-  }
+  Plotly.redraw(plotlyChart.value)
 })
 </script>
 
