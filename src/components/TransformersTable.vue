@@ -4,6 +4,9 @@ import { useAssetsStore } from '../stores/asset'
 import { useFilteredAssetsStore } from '../stores/filteredAssets'
 import { useSearchFilterStore } from '../stores/searchFilterStore'
 import VoltageChart from './VoltageChart.vue'
+import SearchInput from './SearchInput.vue'
+import SelectDropdown from './SelectDropdown.vue'
+import ActionButton from './ActionButton.vue'
 
 const assetsStore = useAssetsStore()
 const filteredAssetsStore = useFilteredAssetsStore()
@@ -54,21 +57,28 @@ const healthStatuses = computed(() => [...new Set(assetsStore.assets.map(asset =
 <template>
   <div class="container" v-if="assetsStore.assets.length">
     <div class="controls">
-      <input
-        type="text"
+      <SearchInput
         v-model="searchFilterStore.searchQuery"
         placeholder="Search for a transformer name..."
-        class="search-bar"
+        inputClass="search-bar"
       />
-      <select v-model="searchFilterStore.selectedRegion">
-        <option value="">All Regions</option>
-        <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
-      </select>
-      <select v-model="searchFilterStore.selectedHealth">
-        <option value="">All Health Statuses</option>
-        <option v-for="health in healthStatuses" :key="health" :value="health">{{ health }}</option>
-      </select>
-      <button @click="resetStores">Refresh Data</button>
+      <SelectDropdown
+        v-model="searchFilterStore.selectedRegion"
+        :options="regions.map(region => ({ value: region, text: region }))"
+        :defaultOption="{ value: '', text: 'All Regions' }"
+        selectClass="select-dropdown"
+      />
+      <SelectDropdown
+        v-model="searchFilterStore.selectedHealth"
+        :options="healthStatuses.map(health => ({ value: health, text: health }))"
+        :defaultOption="{ value: '', text: 'All Health Statuses' }"
+        selectClass="select-dropdown"
+      />
+      <ActionButton
+        buttonText="Refresh Data"
+        buttonClass="refresh-button"
+        :onClick="resetStores"
+      />
     </div>
     <div class="table-container">
       <table>
@@ -108,8 +118,8 @@ const healthStatuses = computed(() => [...new Set(assetsStore.assets.map(asset =
 }
 
 .search-bar,
-select,
-button {
+.select-dropdown,
+.refresh-button {
   padding: 0.5rem;
   font-size: 1rem;
   flex-grow: 1;
@@ -146,13 +156,13 @@ th {
   }
 
   .search-bar,
-  select,
-  button {
+  .select-dropdown,
+  .refresh-button {
     width: 100%;
     margin-bottom: 0.5rem;
   }
 
-  button {
+  .refresh-button {
     margin-bottom: 0;
   }
 }
