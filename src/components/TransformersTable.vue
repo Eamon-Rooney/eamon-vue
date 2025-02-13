@@ -66,7 +66,7 @@ const healthStatuses = computed(() => [...new Set(assetsStore.assets.map(asset =
     <div class="controls">
       <SearchInput
         v-model="searchFilterStore.searchQuery"
-        placeholder="Search for a transformer name..."
+        placeholder="Search transformer name..."
         inputClass="search-bar"
       />
       <SelectDropdown
