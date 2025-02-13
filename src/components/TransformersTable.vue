@@ -7,6 +7,7 @@ import VoltageChart from './VoltageChart.vue'
 import SearchInput from './SearchInput.vue'
 import SelectDropdown from './SelectDropdown.vue'
 import ActionButton from './ActionButton.vue'
+import { fetchData } from '../services/transformersService'
 
 const assetsStore = useAssetsStore()
 const filteredAssetsStore = useFilteredAssetsStore()
@@ -24,12 +25,18 @@ onMounted(() => {
   }
 })
 
-const resetStores = () => {
-  filteredAssetsStore.setAssets(assetsStore.assets)
-  searchFilterStore.setSearchQuery('')
-  searchFilterStore.setSelectedRegion('')
-  searchFilterStore.setSelectedHealth('')
-  searchFilterStore.traceVisibility = assetsStore.assets.map(() => true) // Reset traceVisibility to true for all assets
+const resetStores = async () => {
+  try {
+    const freshData = await fetchData()
+    assetsStore.assets = freshData
+    filteredAssetsStore.setAssets(assetsStore.assets)
+    searchFilterStore.setSearchQuery('')
+    searchFilterStore.setSelectedRegion('')
+    searchFilterStore.setSelectedHealth('')
+    searchFilterStore.traceVisibility = assetsStore.assets.map(() => true) // Reset traceVisibility to true for all assets
+  } catch (error) {
+    console.error('Failed to fetch fresh data:', error)
+  }
 }
 
 const filterAssets = () => {
