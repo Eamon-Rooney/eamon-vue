@@ -70,11 +70,14 @@ const plotlyLayout = computed(() => {
 
 const toggleTrace = (assetId: number) => {
   if (plotlyChart.value) {
-    const traceIndex = plotlyChart.value.data.findIndex((trace: Trace) => trace.assetId === assetId)
+    const traceIndex = plotlyChart.value.data.findIndex((trace: { assetId: number }) => trace.assetId === assetId)
     if (traceIndex !== -1) {
-      plotlyChart.value.data[traceIndex].visible = !plotlyChart.value.data[traceIndex].visible
-      searchFilterStore.traceVisibility[assetId] = plotlyChart.value.data[traceIndex].visible
-      Plotly.redraw(plotlyChart.value)
+      const currentVisibility = plotlyChart.value.data[traceIndex].visible
+      const update = {
+        visible: currentVisibility === true || currentVisibility === undefined ? 'legendonly' : true
+      }
+      Plotly.restyle(plotlyChart.value.$el, update, [traceIndex])
+      searchFilterStore.traceVisibility[assetId] = !searchFilterStore.traceVisibility[assetId]
     }
   }
 }
@@ -91,12 +94,20 @@ const getRandomColor = () => {
 
 // Watch for changes in filteredAssetsStore.assets to reset checkboxes
 watch(filteredAssetsStore.assets, (newAssets, oldAssets) => {
-  searchFilterStore.traceVisibility = newAssets.map(() => true)
+  if (plotlyChart.value && newAssets !== oldAssets) {
+    plotlyChart.value.data.forEach((trace: { visible: boolean; assetId: number }) => {
+      trace.visible = true // Reset visibility to true
+      searchFilterStore.traceVisibility[trace.assetId] = true
+    })
+    Plotly.redraw(plotlyChart.value.$el)
+  }
 })
 
 // Watch for changes in searchFilterStore to update the chart
 watch([() => searchFilterStore.searchQuery, () => searchFilterStore.selectedRegion, () => searchFilterStore.selectedHealth], () => {
-  Plotly.redraw(plotlyChart.value)
+  if (plotlyChart.value) {
+    Plotly.redraw(plotlyChart.value.$el)
+  }
 })
 </script>
 
