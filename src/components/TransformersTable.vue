@@ -50,6 +50,18 @@ const filterAssets = () => {
   )
 }
 
+const handleSearch = () => {
+  localStorage.setItem(
+    'searchFilter',
+    JSON.stringify({
+      searchQuery: searchFilterStore.searchQuery,
+      selectedRegion: searchFilterStore.selectedRegion,
+      selectedHealth: searchFilterStore.selectedHealth,
+    })
+  )
+  filterAssets()
+}
+
 watch([() => searchFilterStore.searchQuery, () => searchFilterStore.selectedRegion, () => searchFilterStore.selectedHealth], filterAssets)
 
 watchEffect(() => {
@@ -68,6 +80,7 @@ const healthStatuses = computed(() => [...new Set(assetsStore.assets.map(asset =
         v-model="searchFilterStore.searchQuery"
         placeholder="Search transformer name..."
         inputClass="search-bar"
+        :onSearch="handleSearch"
       />
       <SelectDropdown
         v-model="searchFilterStore.selectedRegion"
