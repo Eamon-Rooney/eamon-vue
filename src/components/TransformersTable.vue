@@ -57,7 +57,7 @@ const healthStatuses = computed(() => [...new Set(assetsStore.assets.map(asset =
       <input
         type="text"
         v-model="searchFilterStore.searchQuery"
-        placeholder="Search for a transformer..."
+        placeholder="Search for a transformer name..."
         class="search-bar"
       />
       <select v-model="searchFilterStore.selectedRegion">
@@ -68,7 +68,7 @@ const healthStatuses = computed(() => [...new Set(assetsStore.assets.map(asset =
         <option value="">All Health Statuses</option>
         <option v-for="health in healthStatuses" :key="health" :value="health">{{ health }}</option>
       </select>
-      <button @click="resetStores">Reset</button>
+      <button @click="resetStores">Refresh Data</button>
     </div>
     <div class="table-container">
       <table>
@@ -107,10 +107,13 @@ const healthStatuses = computed(() => [...new Set(assetsStore.assets.map(asset =
   margin-bottom: 1rem;
 }
 
-.search-bar {
+.search-bar,
+select,
+button {
   padding: 0.5rem;
   font-size: 1rem;
   flex-grow: 1;
+  text-align: center; /* Center the text */
 }
 
 .table-container {
@@ -134,5 +137,23 @@ th, td {
 th {
   background-color: #f2f2f2;
   text-align: left;
+}
+
+@media (max-width: 600px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-bar,
+  select,
+  button {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  button {
+    margin-bottom: 0;
+  }
 }
 </style>
