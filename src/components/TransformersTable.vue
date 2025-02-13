@@ -2,37 +2,44 @@
 import { ref, onMounted, computed, watch, watchEffect } from 'vue'
 import { useAssetsStore } from '../stores/asset'
 import { useFilteredAssetsStore } from '../stores/filteredAssets'
+import { useSearchFilterStore } from '../stores/searchFilterStore'
 import VoltageChart from './VoltageChart.vue'
 
 const assetsStore = useAssetsStore()
 const filteredAssetsStore = useFilteredAssetsStore()
-const searchQuery = ref('')
-const selectedRegion = ref('')
-const selectedHealth = ref('')
+const searchFilterStore = useSearchFilterStore()
 
 onMounted(() => {
-  assetsStore.loadAssets()
+  if (filteredAssetsStore.assets.length === 0) {
+    assetsStore.loadAssets().then(() => {
+      filteredAssetsStore.setAssets(assetsStore.assets)
+      filterAssets()
+    })
+  } else {
+    filteredAssetsStore.setAssets(filteredAssetsStore.assets)
+    filterAssets()
+  }
 })
 
 const resetStores = () => {
   filteredAssetsStore.setAssets(assetsStore.assets)
-  searchQuery.value = ''
-  selectedRegion.value = ''
-  selectedHealth.value = ''
+  searchFilterStore.setSearchQuery('')
+  searchFilterStore.setSelectedRegion('')
+  searchFilterStore.setSelectedHealth('')
 }
 
 const filterAssets = () => {
   filteredAssetsStore.setAssets(
     assetsStore.assets.filter(asset => {
-      const matchesSearch = asset.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-      const matchesRegion = selectedRegion.value ? asset.region === selectedRegion.value : true
-      const matchesHealth = selectedHealth.value ? asset.health === selectedHealth.value : true
+      const matchesSearch = asset.name.toLowerCase().includes(searchFilterStore.searchQuery.toLowerCase())
+      const matchesRegion = searchFilterStore.selectedRegion ? asset.region === searchFilterStore.selectedRegion : true
+      const matchesHealth = searchFilterStore.selectedHealth ? asset.health === searchFilterStore.selectedHealth : true
       return matchesSearch && matchesRegion && matchesHealth
     })
   )
 }
 
-watch([searchQuery, selectedRegion, selectedHealth], filterAssets)
+watch([() => searchFilterStore.searchQuery, () => searchFilterStore.selectedRegion, () => searchFilterStore.selectedHealth], filterAssets)
 
 watchEffect(() => {
   filteredAssetsStore.setAssets(assetsStore.assets)
@@ -48,15 +55,15 @@ const healthStatuses = computed(() => [...new Set(assetsStore.assets.map(asset =
     <div class="controls">
       <input
         type="text"
-        v-model="searchQuery"
+        v-model="searchFilterStore.searchQuery"
         placeholder="Search for a transformer..."
         class="search-bar"
       />
-      <select v-model="selectedRegion">
+      <select v-model="searchFilterStore.selectedRegion">
         <option value="">All Regions</option>
         <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
       </select>
-      <select v-model="selectedHealth">
+      <select v-model="searchFilterStore.selectedHealth">
         <option value="">All Health Statuses</option>
         <option v-for="health in healthStatuses" :key="health" :value="health">{{ health }}</option>
       </select>
