@@ -26,6 +26,7 @@ const resetStores = () => {
   searchFilterStore.setSearchQuery('')
   searchFilterStore.setSelectedRegion('')
   searchFilterStore.setSelectedHealth('')
+  searchFilterStore.traceVisibility = assetsStore.assets.map(() => true) // Reset traceVisibility to true for all assets
 }
 
 const filterAssets = () => {
