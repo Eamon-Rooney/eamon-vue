@@ -10,7 +10,7 @@ docker-compose down
 
 # eamon-vue json fix
 Updated API sampledata.json to use "lastTenVoltageReadings" instead of "lastTenVoltgageReadings" 
-i.e. request for API to update Backend for correct spelling
+i.e. request for API to update Backend for correct spelling (remove the extra "g")
 
 
 
@@ -57,7 +57,7 @@ npm run test:e2e
 # Runs the tests only on Chromium
 npm run test:e2e -- --project=chromium
 # Runs the tests of a specific file
-npm run test:e2e -- tests/example.spec.ts
+npm run test:e2e -- home.spec.ts
 # Runs the tests in debug mode
 npm run test:e2e -- --debug
 ```
