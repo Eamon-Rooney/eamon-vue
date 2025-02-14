@@ -7,11 +7,15 @@ import VoltageChart from './VoltageChart.vue'
 import SearchInput from './SearchInput.vue'
 import SelectDropdown from './SelectDropdown.vue'
 import ActionButton from './ActionButton.vue'
+import TablePagination from './TablePagination.vue'
 import { fetchData } from '../services/transformersService'
 
 const assetsStore = useAssetsStore()
 const filteredAssetsStore = useFilteredAssetsStore()
 const searchFilterStore = useSearchFilterStore()
+
+const currentPage = ref(searchFilterStore.currentPage || 1)
+const itemsPerPage = ref(searchFilterStore.itemsPerPage || 3)
 
 onMounted(() => {
   if (filteredAssetsStore.assets.length === 0) {
@@ -34,6 +38,9 @@ const resetStores = async () => {
     searchFilterStore.setSelectedRegion('')
     searchFilterStore.setSelectedHealth('')
     searchFilterStore.traceVisibility = assetsStore.assets.map(() => true) // Reset traceVisibility to true for all assets
+    searchFilterStore.itemsPerPage = 3
+    searchFilterStore.currentPage = 1
+    localStorage.setItem('searchFilter', JSON.stringify(searchFilterStore.$state))
   } catch (error) {
     console.error('Failed to fetch fresh data:', error)
   }
@@ -71,6 +78,24 @@ watchEffect(() => {
 
 const regions = computed(() => [...new Set(assetsStore.assets.map(asset => asset.region))])
 const healthStatuses = computed(() => [...new Set(assetsStore.assets.map(asset => asset.health))])
+
+const paginatedAssets = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return filteredAssetsStore.assets.slice(start, end)
+})
+
+const totalPages = computed(() => Math.ceil(filteredAssetsStore.assets.length / itemsPerPage.value))
+
+// Watch for changes in itemsPerPage and currentPage to update the table
+watch(
+  () => [searchFilterStore.itemsPerPage, searchFilterStore.currentPage],
+  ([newItemsPerPage, newCurrentPage]) => {
+    itemsPerPage.value = newItemsPerPage
+    currentPage.value = newCurrentPage
+    filterAssets()
+  }
+)
 </script>
 
 <template>
@@ -110,13 +135,19 @@ const healthStatuses = computed(() => [...new Set(assetsStore.assets.map(asset =
           </tr>
         </thead>
         <tbody>
-          <tr v-for="asset in filteredAssetsStore.assets" :key="asset.assetId">
+          <tr v-for="asset in paginatedAssets" :key="asset.assetId">
             <td>{{ asset.name }}</td>
             <td>{{ asset.region }}</td>
             <td>{{ asset.health }}</td>
           </tr>
         </tbody>
       </table>
+      <TablePagination
+        :totalItems="filteredAssetsStore.assets.length"
+        :initialItemsPerPage="itemsPerPage"
+        @update:currentPage="currentPage = $event"
+        @update:itemsPerPage="itemsPerPage = $event"
+      />
     </div>
     <div class="chart-container">
       <VoltageChart />
@@ -144,6 +175,12 @@ const healthStatuses = computed(() => [...new Set(assetsStore.assets.map(asset =
   font-size: 1rem;
   flex-grow: 1;
   text-align: center; /* Center the text */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.search-bar {
+  padding-right: 30px; /* Add padding to the right to make space for the icon */
 }
 
 .table-container {

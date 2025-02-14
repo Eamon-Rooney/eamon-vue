@@ -7,6 +7,8 @@ export const useSearchFilterStore = defineStore('searchFilter', () => {
   const selectedHealth = ref('')
   const traceVisibility = ref<boolean[]>([])
   const traceColors = ref<string[]>([])
+  const currentPage = ref(1)
+  const itemsPerPage = ref(3)
 
   function setSearchQuery(query: string) {
     searchQuery.value = query
@@ -34,6 +36,8 @@ export const useSearchFilterStore = defineStore('searchFilter', () => {
     selectedHealth,
     traceVisibility,
     traceColors,
+    currentPage,
+    itemsPerPage,
     setSearchQuery,
     setSelectedRegion,
     setSelectedHealth,
