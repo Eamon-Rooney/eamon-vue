@@ -7,7 +7,7 @@ import { defineProps } from 'vue'
 
 const props = defineProps({
   buttonText: String,
-  buttonClass: String,
+  buttonClass: [String, Object], // Accept both string and object
   onClick: Function
 })
 
