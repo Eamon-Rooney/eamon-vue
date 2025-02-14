@@ -2,8 +2,7 @@
   <div class="search-input-container">
     <input
       type="text"
-      :value="modelValue"
-      @change="updateValue"
+      v-model="inputValue"
       :placeholder="placeholder"
       :class="inputClass"
     />
@@ -14,6 +13,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
@@ -25,11 +25,14 @@ const props = defineProps({
 
 const emits = defineEmits(['update:modelValue'])
 
-const updateValue = (event: Event) => {
-  emits('update:modelValue', (event.target as HTMLInputElement).value)
-}
+const inputValue = ref(props.modelValue)
+
+watch(() => props.modelValue, (newValue) => {
+  inputValue.value = newValue
+})
 
 const handleSearchClick = () => {
+  emits('update:modelValue', inputValue.value)
   if (props.onSearch) {
     props.onSearch()
   }
