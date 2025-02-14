@@ -8,7 +8,7 @@
     <span>Page {{ currentPage }} of {{ totalPages }}</span>
     <label class="items-per-page">
       Items per page:
-      <input type="text" v-model.number="itemsPerPage" @change="updateItemsPerPage" :max="props.totalItems" min="1" />
+      <input type="text" v-model.number="itemsPerPage" @change="updateItemsPerPage" :max="props.totalItems ?? 0" min="1" />
     </label>
     <ActionButton
       buttonText="Next"
@@ -24,7 +24,11 @@ import { useSearchFilterStore } from '../stores/searchFilterStore'
 import ActionButton from './ActionButton.vue'
 
 const props = defineProps({
-  totalItems: Number,
+  totalItems: {
+    type: Number,
+    required: false,
+    default: 0, // Provide a default value
+  },
   initialItemsPerPage: Number,
 })
 
@@ -35,7 +39,7 @@ const searchFilterStore = useSearchFilterStore()
 const currentPage = ref(searchFilterStore.currentPage || 1)
 const itemsPerPage = ref(searchFilterStore.itemsPerPage || props.initialItemsPerPage || 3)
 
-const totalPages = computed(() => Math.ceil(props.totalItems / itemsPerPage.value))
+const totalPages = computed(() => Math.ceil((props.totalItems ?? 0) / itemsPerPage.value))
 
 const prevPage = () => {
   if (currentPage.value > 1) {

@@ -1,12 +1,21 @@
-# eamon-vue docker build
+# eamon-vue run app instructions
+### clone repository
+```sh
+git clone https://github.com/Eamon-Rooney/eamon-vue.git
+```
+### enter directory
+```sh
+cd eamon-vue
+```
+### start docker desktop app docker engine
+Open docker desktop on machine
+### start app using docker
 ```sh
 docker-compose up --build
 ```
+### open localhost:8080 in browser to view app
+go to localhost:8080 in browser
 
-# eamon-vue docker stop
-```sh
-docker-compose down
-```
 
 # eamon-vue json fix
 Updated API sampledata.json to use "lastTenVoltageReadings" instead of "lastTenVoltgageReadings" 
