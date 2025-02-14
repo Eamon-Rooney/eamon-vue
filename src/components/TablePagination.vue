@@ -60,6 +60,9 @@ const nextPage = () => {
 }
 
 const updateItemsPerPage = () => {
+  if (!itemsPerPage.value || itemsPerPage.value <= 0) {
+    itemsPerPage.value = 1 // Set a default value if the input is invalid
+  }
   emits('update:itemsPerPage', itemsPerPage.value)
   currentPage.value = 1
   emits('update:currentPage', currentPage.value)
