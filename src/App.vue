@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import TransformersTable from './components/TransformersTable.vue'
+import HistoryTable from '@/./components/HistoryTable.vue'
+import HistoryChart from '@/./components/HistoryChart.vue'
+
 </script>
 
 <template>
   <main>
-    <TransformersTable />
+    <HistoryTable />
+    <HistoryChart />
   </main>
 </template>
 
