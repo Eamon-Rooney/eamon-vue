@@ -2,20 +2,19 @@
 import { computed, ref } from 'vue'
 import { useHistoryStore } from '../stores/historyStore'
 import { VuePlotly } from 'vue3-plotly'
+import type { LeagueStandings } from '@/types/history'
 
 const historyStore = useHistoryStore()
-
-import type { User, LeagueStandings } from '../types/history'
-const leagueStandings = historyStore.leagueStandings as LeagueStandings
 const selectedMetric = ref('points') // Default metric
 
+// Bind to the store's leagueStandings and userHistories
+const leagueStandings = computed(() => historyStore.leagueStandings as LeagueStandings)
+const userHistories = computed(() => historyStore.userHistories)
+
 const chartData = computed(() => {
-  return leagueStandings.map((user) => ({
-    x: historyStore.userHistories[user.entry]?.map((data: { event: any }) => data.event) || [],
-    y:
-      historyStore.userHistories[user.entry]?.map(
-        (data: { [x: string]: any }) => data[selectedMetric.value]
-      ) || [],
+  return leagueStandings.value.map((user) => ({
+    x: userHistories.value[user.entry]?.map((data: { event: any }) => data.event) || [],
+    y: userHistories.value[user.entry]?.map((data: { [key: string]: any }) => data[selectedMetric.value]) || [],
     type: 'scatter',
     mode: 'lines+markers',
     name: user.entry_name,
@@ -45,3 +44,13 @@ const chartLayout = {
     <VuePlotly :data="chartData" :layout="chartLayout" />
   </div>
 </template>
+
+<style scoped>
+label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+select {
+  margin-bottom: 20px;
+}
+</style>

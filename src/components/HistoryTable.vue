@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useHistoryStore } from '../stores/historyStore'
 
 const historyStore = useHistoryStore()
 const leagueId = 175725 // Default league ID
-const leagueStandings = historyStore.leagueStandings as Array<{ entry: number; player_name: string; entry_name: string }>
+const leagueStandings = computed(() => historyStore.leagueStandings as Array<{ entry: number; player_name: string; entry_name: string }>)
 
 onMounted(() => {
   historyStore.loadLeagueAndHistories(leagueId)
@@ -15,7 +15,7 @@ onMounted(() => {
 <template>
   <div>
     <h2>League Standings</h2>
-    <table class="league-table">
+    <table v-if="leagueStandings.length" class="league-table">
       <thead>
         <tr>
           <th>Rank</th>
@@ -31,6 +31,7 @@ onMounted(() => {
         </tr>
       </tbody>
     </table>
+    <p v-else>No data available.</p>
   </div>
 </template>
 
