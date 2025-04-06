@@ -5,7 +5,7 @@ import { fetchUserHistory } from '../services/historyService'
 
 export const useHistoryStore = defineStore('history', () => {
   const leagueStandings = ref([])
-  const userHistories = ref<Record<number, any>>({}) // Store histories by entry ID
+  const userHistories = ref<Record<number, { current: any[]; chips: any[] }>>({}) // Store histories and chips by entry ID
 
   async function loadLeagueAndHistories(leagueId: number = 175725) {
     const storedData = localStorage.getItem('history-store')
@@ -30,7 +30,7 @@ export const useHistoryStore = defineStore('history', () => {
       const standings = await fetchLeagueStandings(leagueId)
       leagueStandings.value = standings
 
-      const histories: Record<number, any> = {}
+      const histories: Record<number, { current: any[]; chips: any[] }> = {}
       for (const user of standings) {
         histories[user.entry] = await fetchUserHistory(user.entry)
       }
