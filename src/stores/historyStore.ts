@@ -7,7 +7,7 @@ export const useHistoryStore = defineStore('history', () => {
   const leagueStandings = ref([])
   const userHistories = ref<Record<number, { current: any[]; chips: any[] }>>({}) // Store histories and chips by entry ID
 
-  async function loadLeagueAndHistories(leagueId: number = 175725) {
+  async function loadLeagueAndHistories(leagueId: number = 124484) {
     const storedData = localStorage.getItem('history-store')
     const now = Date.now()
 

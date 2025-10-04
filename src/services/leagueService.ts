@@ -1,4 +1,4 @@
-export const fetchLeagueStandings = async (leagueId: number = 175725) => {
+export const fetchLeagueStandings = async (leagueId: number = 124484) => {
   const url = `https://cors-anywhere.herokuapp.com/https://fantasy.premierleague.com/api/leagues-classic/${leagueId}/standings/`
   try {
     const response = await fetch(url)
