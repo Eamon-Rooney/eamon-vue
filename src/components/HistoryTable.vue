@@ -3,7 +3,7 @@ import { onMounted, computed } from 'vue'
 import { useHistoryStore } from '../stores/historyStore'
 
 const historyStore = useHistoryStore()
-const leagueId = 175725 // Default league ID
+const leagueId = 124484 // Default league ID
 const leagueStandings = computed(() => historyStore.leagueStandings as Array<{ entry: number; player_name: string; entry_name: string }>)
 
 onMounted(() => {
